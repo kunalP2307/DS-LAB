@@ -1,0 +1,16 @@
+git clone https://github.com/apache/impala.git impala
+cd impala
+sudo docker network create -d bridge quickstart-network
+export QUICKSTART_IP=$(sudo docker network inspect quickstart-network -f '{{(index .IPAM.Config 0).Gateway}}')
+export QUICKSTART_LISTEN_ADDR=$QUICKSTART_IP
+export QUICKSTART_LISTEN_ADDR=0.0.0.0
+
+
+export IMPALA_QUICKSTART_IMAGE_PREFIX="apache/impala:81d5377c2-"
+sudo chmod 666 /var/run/docker.sock
+
+
+docker-compose -f docker/quickstart.yml up -d
+
+
+sudo docker run --network=quickstart-network -it ${IMPALA_QUICKSTART_IMAGE_PREFIX}impala_quickstart_client impala-shell
